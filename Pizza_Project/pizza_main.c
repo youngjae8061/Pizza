@@ -3,10 +3,12 @@
 #include<stdbool.h>	    // bool, true, false가 정의된 헤더 파일
 #include<Windows.h>		// 윈도우 콘솔창 관련 헤더 파일 
 
+
    /////////////////////////////////////////////////
   //              기초프로젝트 8팀                //
  // 팀장 - 이창진   팀원 - 김정아, 고동현, 이영재 //
 ////////////////////////////////////////////////
+
 
 // 주문 노드
 typedef struct order {
@@ -18,6 +20,7 @@ typedef struct order {
 }order;
 order* order_h;			// 주문노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
 
+
 // 사용자 정보 노드
 typedef struct user_info{
 	char name[20];		// 사용자 이름
@@ -27,6 +30,7 @@ typedef struct user_info{
 }info;
 info* info_h;		    // 사용자 정보 노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
 
+
 // 고객 관리 노드
 typedef struct user_manage {
 	char name[20];				// 사용자 이름
@@ -35,6 +39,7 @@ typedef struct user_manage {
 	struct user_manage* next;	//
 }mng;
 mng* mng_h;					    // 고객 관리 노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
+
 
 // 테이블 정보 노드
 typedef struct table {
@@ -47,7 +52,6 @@ typedef struct table {
     struct user_info* next3;
     int table4;
     struct user_info* next4;
-
 }tb;
 tb* tb_h;				    // 주문노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
 
@@ -64,9 +68,6 @@ int main() {
 	SetConsoleTitle(TEXT("Pizza Store - 기초프로젝트 13분반 8조")); // 콘솔창 제목
 
     int num = 0;
-    order* head = NULL;
-    head = (order*)malloc(sizeof(order));
-    head->next = NULL;
 
     program_info();
 
@@ -91,10 +92,10 @@ int main() {
                     printf("~ \n");
                     break;
                 case 3: // 중간 계산서 출력
-                    printf("~ \n");
+                    middle_bill();
                     break;
                 case 4: // 계산
-                    printf("~ \n");
+                    last_bill();
                     break;
                 case 5: return 0; // 종료
                 default:
@@ -104,7 +105,6 @@ int main() {
             }
         }
     }
-
 	return 0;
 }
 
