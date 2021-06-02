@@ -68,7 +68,7 @@ int main() {
 	SetConsoleTitle(TEXT("Pizza Store - 기초프로젝트 13분반 8조")); // 콘솔창 제목
 
     int num = 0;
-
+    printf("11111");
     program_info();
 
     while (1)
