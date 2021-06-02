@@ -83,6 +83,7 @@ int main() {
 	SetConsoleTitle(TEXT("Pizza Store - 기초프로젝트 13분반 8조")); // 콘솔창 제목
     
     int num = 0;
+    printf("22222");
 
     order_h = (order*)malloc(sizeof(order));
     user_info_h = NULL;
