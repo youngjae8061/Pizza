@@ -20,6 +20,7 @@ typedef struct order {
 	struct order* next;	//
 }order;
 order* order_h;			// 주문노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
+order* order_end;
 
 
 // 사용자 정보 노드
@@ -63,35 +64,36 @@ void user_menu();               // 사용자 메뉴 출력
 void menu_info();               // 가게 메뉴 출력
 void input_menu(order* start);  // 메뉴 입력(사용자)
 void print_menu(order* start);  // 사용자가 주문한 출력
+void modify_menu();             // 주문한 메뉴 수정
 void new_customer();            // 손님 입장
 void middle_bill();		        // 중간 계산 영수증
 void last_bill();	            // 최종 영수증
+void table_num();               // 테이블 번호 입력
 
 
-char Premium[4][20] = { "쉬림프피자", "해물피자", "핫스파이스피자", "슈퍼콤비네이션피자" };
-char Classic[4][20] = { "불고기피자", "고구마피자",  "포테이토피자",  "페페로니피자" };
-/*char price[14][3][20] = { 
+char menu_price[14][3][20] = { 
     {"불고기피자", "20000", "0"}, {"고구마피자", "19000", "0"}, {"포테이토피자", "19000", "0"}, {"페페로니피자 ", "19000", "0"}, 
     {"쉬림프피자", "26000", "1"}, {"해물피자", "28000", "1"}, {"핫스파이시피자", "24000", "1"}, {"슈퍼콤비네이션피자", "26000", "1"},
     {"윙&봉", "6000", "2"}, {"치킨텐더", "6000", "2"}, {"스파게티", "7000", "2"}, {"치즈볼", "5000", "2"},
     {"콜라", "2000", "2"}, {"사이다", "2000", "2"} 
-};*/
+};
 
 
 
 int main() {
 	SetConsoleTitle(TEXT("Pizza Store - 기초프로젝트 13분반 8조")); // 콘솔창 제목
+    system("mode con:cols=150 lines=70");
     
     int num = 0;
-    printf("22222");
 
     order_h = (order*)malloc(sizeof(order));
+    order_end = (order*)malloc(sizeof(order));
+    user_info_h = (user_info*)malloc(sizeof(user_info));
+    mng_h = (mng*)malloc(sizeof(mng));
+    tb_h = (tb*)malloc(sizeof(tb));
     user_info_h = NULL;
     mng_h = NULL;
     tb_h = NULL;
-    //user_info_h = (user_info*)malloc(sizeof(user_info));
-    //mng_h = (mng*)malloc(sizeof(mng));
-    //tb_h = (tb*)malloc(sizeof(tb));
     memset(order_h, 0, sizeof(order));
 
     program_info();
@@ -110,15 +112,18 @@ int main() {
             order* tmp = order_h;
             switch (num) {
                 case 1: // 주문
+                    table_num();
+                    menu_info();
                     for (; tmp->next != NULL;)
                     {
                         tmp = tmp->next;
                     }
                     input_menu(tmp);
                     print_menu(order_h);
+                    printf("\n\n");
                     break;
                 case 2: // 주문 수정
-                    printf("~ \n");
+                    modify_menu();
                     break;
                 case 3: // 중간 계산서 출력
                     middle_bill();
@@ -141,55 +146,104 @@ int main() {
 }
 
 
-void input_menu(order* start)
-{
+void modify_menu() {
     system("cls");
+    t.table1 = false;
+    int t_num=0;
+    order_h = NULL;
+    order_end = NULL;
+    order* add_temp = NULL;
+    order* curr = order_h;
+    user_info1 = (user_info*)malloc(sizeof(user_info));
+    t.next1 = user_info1;
+
+    user_info* user = user_info_h;       
+    order* menu_list = (order*)malloc(sizeof(order)); 
+
+    printf("이름 : ");
+    scanf_s("%s", user_info1->name, 20);
+    user_info1->phone = 1234;
+
+    printf("안녕하세요 전화번호 %d번 , %s님\n", user_info1->phone, user_info1->name);
+    
+    user_info1->next = menu_list;
+
+    for (int i = 0; i < 2; i++) {
+        printf("음식명 : ");
+        scanf_s("%s", menu_list->menu, 50);
+        menu_list->count = 2;
+        menu_list->price = 18000;
+        menu_list->pizza = 0;
+        printf("%s, %d %d %d\n", menu_list->menu, menu_list->count, menu_list->price, menu_list->pizza);
+        if (order_h == NULL) {
+            menu_list->next = NULL;
+            order_h = order_end = menu_list;
+        }
+        else {
+            menu_list->next = order_h;
+            order_h = menu_list;
+        }
+    }    
+
+    int i = 1;          // 메뉴 숫자를 표시하기 위한 변수
+    printf("몇번 테이블 입니까?");
+    scanf_s("%d", &t_num);
+    switch (t_num) {
+        case 1:
+            printf("1번 테이블의 메뉴는 다음과 같습니다.\n");
+            if (t.table1 == true) {
+                printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
+                return 0;
+            }
+            add_temp = order_h;
+            //print_menu(order_h);
+            while (add_temp != NULL) {
+                printf("\n\t%d. 메뉴명 : %s\n\n", i++, add_temp->menu);
+                printf("\t   개수 : %d\n\n", add_temp->count);
+                printf("\t   가격 : %d\n\n", add_temp->price);
+                add_temp = add_temp->next;
+            }
+            printf("\n");
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        default:
+            system("cls");
+            printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
+            break;
+    }
+}
+
+
+void input_menu(order* start){
+    //system("cls");
     order* current = NULL;
 
     current = (order*)malloc(sizeof(order));
+    memset(current, 0, sizeof(order));
     start->next = current;
     current->next = NULL;
 
-    menu_info();
-
-    //order memu, count, price 
-    printf("\n\n0.프리미엄 피자 1.일반 피자 2.사이드 3.음료\n----------------------------------------------\n메뉴 종류를 입력해주세요. : ");
-    scanf_s("%d", &current->pizza);
     getchar();
+    //order memu, count
     printf("\n\n주문하실 메뉴를 적어주세요. : ");
-    //scanf_s("%s", current->name);
     gets_s(current->menu, 20);
-    printf("개수를 입력해주세요. : ");
-    scanf_s("%d", &current->count);
-    printf("가격을 입력하시오 : ");
-    scanf_s("%d", &current->price);
-    printf("");
-    // 프리미엄 피자 2판마다 3000 할인, 일반 피자 2판마다 2000 할인
-    for (int i = 0; i < 4; i++)
-    {
-        if (strcmp(Premium[i], current->menu) == 0) // 100s = premium pizza
-        {
-            current->count *= 100;
+    for (int i = 0; i < 14; i++){
+        if (strcmp(menu_price[i][0], current->menu) == 0){
+            printf("개수를 입력해주세요. : ");
+            scanf_s("%d", &current->count);
+
+            int c = current->count; //memu count value
+            current->price = atoi(menu_price[i][1]) * c;
+        }
+        else if (strcmp(menu_price[i][0], current->menu) == 1){
+            printf("잘못 입력하셨습니다.");
             break;
         }
-        else if (strcmp(Classic[i], current->menu) == 0) // 1s = classic pizza
-        {
-            current->count *= 1;
-            break;
-        }
-    }
-
-    int n = current->count / 100; //premium
-    int m = current->count % 50;  //classic
-
-    //sale event
-    if (n || m)
-    {
-        n = n / 2;
-        m = m / 2;
-
-        current->price -= n * 3000;
-        current->price -= m * 2000;
     }
 }
 
@@ -198,13 +252,12 @@ void print_menu(order* start){
     system("cls");
     order* tmp = start;
     int i = 0;
-    int PPC;
     tmp = tmp->next;
     printf("\n\n주문서 총 목록\n");
     printf("===========================================\n");
     for (i = 0;; i++)
     {
-        printf("%d | %s  %d  %d\n\n", i + 1, tmp->menu, tmp->count, tmp->price);
+        printf("%d | %s  %d  %d\n", i + 1, tmp->menu, tmp->count, tmp->price);
 
         if (tmp->next == NULL)
             break;
@@ -657,8 +710,7 @@ void user_menu() {
 }
 
 
-void menu_info()
-{
+void menu_info(){
     system("cls");
     printf("\n\t\t          [메뉴판]           \n");
     printf("\t\t        프리미엄 피자        \n");
@@ -696,4 +748,30 @@ void program_info()
     printf("\t               피자 가게  프로그램              \n");
     printf("\t   8팀 : 이창진(조장), 고동현, 김정아, 이영재   \n");
     printf("\t------------------------------------------------\n\n\n");
+}
+
+
+void table_num(){
+    int table = 0;
+
+    printf("입장할때 선택한 테이블 번호(1~4)를 적어주세요. : ");
+    scanf_s("%d", &table);
+
+    switch (table){
+        case 1:
+            printf("1번 테이블을 선택하셨습니다.\n");
+            break;
+        case 2:
+            printf("2번 테이블을 선택하셨습니다.\n");
+            break;
+        case 3:
+            printf("3번 테이블을 선택하셨습니다.\n");
+            break;
+        case 4:
+            printf("4번 테이블을 선택하셨습니다.\n");
+            break;
+        default:
+            printf("잘못입력하셨습니다.\n");
+            return 0;
+    }
 }
