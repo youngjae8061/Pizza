@@ -65,7 +65,7 @@ void menu_info();               // 가게 메뉴 출력
 void input_menu(order* start);  // 메뉴 입력(사용자)
 void print_menu(order* start);  // 사용자가 주문한 출력
 void modify_menu();             // 주문한 메뉴 수정
-void modify_boot(order* find);  // 실제로 메뉴 수정하는 함수
+void modify_bot(order* find);  // 실제로 메뉴 수정하는 함수
 void new_customer();            // 손님 입장
 void middle_bill();		        // 중간 계산 영수증
 void last_bill();	            // 최종 영수증
@@ -162,7 +162,7 @@ void modify_menu() {
                 return 0;
             }
             find = tb_h->next1->next;
-            modify_boot(find);
+            modify_bot(find);
             break;
         case 2:
             if (t.table2 == true) {
@@ -170,7 +170,7 @@ void modify_menu() {
                 return 0;
             }
             find = tb_h->next2->next;
-            modify_boot(find);
+            modify_bot(find);
             break;
         case 3:
             if (t.table3 == true) {
@@ -178,7 +178,7 @@ void modify_menu() {
                 return 0;
             }
             find = tb_h->next3->next;
-            modify_boot(find);
+            modify_bot(find);
             break;
         case 4:
             if (t.table4 == true) {
@@ -186,7 +186,7 @@ void modify_menu() {
                 return 0;
             }
             find = tb_h->next4->next;
-            modify_boot(find);
+            modify_bot(find);
             break;
         default:
             system("cls");
@@ -196,7 +196,7 @@ void modify_menu() {
 }
 
 
-void modify_boot(order* find) {
+void modify_bot(order* find) {
     int temp_count = 0; // 수량 변경 임시 저장(0인지 구분)
     char modify;        // 변경할 메뉴의 이름
     order* head = (order*)malloc(sizeof(order));    // 헤더 노드
