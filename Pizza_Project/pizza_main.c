@@ -267,22 +267,21 @@ void print_menu(order* start){
 
 
 void new_customer() {
-    int table_count = 0;   // 남은 테이블 수
-    int table_number;      // 테이블 번호
-    char name[20];         // 사용자의 이름
-    int phone;             // 사용자의 전화번호 뒷자리
-    int visit;             // 사용자의 방문 횟수
-    bool visit_on = false; // user_manage에서 방문 횟수를 가져왔는지 확인하는 변수
+    int table_count = 0; //남은 테이블 수
+    int table_number; //테이블 번호
+    char name[20]; //사용자의 이름
+    int phone; //사용자의 전화번호 뒷자리
+    int visit; //사용자의 방문 횟수
+    bool visit_on = false; //user_manage에서 방문 횟수를 가져왔는지 확인하는 변수
+    mng* tmp = mng_h; //방문 횟수를 가져오기 위한 순회 포인터
+    mng* new_user = NULL; //새로운 사용자의 정보를 추가하기 위한 포인터
 
-    mng* tmp = mng_h;       // 방문 횟수를 가져오기 위한 순회 포인터
-    mng* new_user = NULL;   // 새로운 사용자의 정보를 추가하기 위한 포인터
-
-    t.next1 = user_info1; // 각 테이블에 info 포인터 초기화
+    t.next1 = user_info1; //각 테이블에 user_info 포인터 초기화
     t.next2 = user_info2;
     t.next3 = user_info3;
-    t.next4 = user_info4;
+    t.next1 = user_info1;
 
-    printf("현재 남은 테이블은 "); // 남은 테이블 번호를 알려주고 자리가 없으면 종료
+    printf("현재 남은 테이블은 "); //남은 테이블 번호를 알려주고 자리가 없으면 종료
     if (t.table1 == false) {
         table_count++;
         printf("1 ");
@@ -314,102 +313,106 @@ void new_customer() {
     scanf_s("%d", &phone, sizeof(phone));
 
     switch (table_number) {
-        case 1:
-            t.table1 = true; //앉은 테이블 자리 없음으로 변경
-            user_info1 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-            strcpy(user_info1->name, name);
-            user_info1->phone = phone;
-            user_info1->next = NULL;
-            while (tmp != NULL) { //방문 횟수 가져오기
-                if (strcmp(tmp->name, name) == 0) {
-                    if (tmp->phone == phone) {
-                        tmp->visit++;
-                        visit = tmp->visit;
-                        visit_on = true;
-                    }
+    case 1:
+        t.table1 = true; //앉은 테이블 자리 없음으로 변경
+        user_info1 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
+        strcpy(user_info1->name, name);
+        user_info1->phone = phone;
+        user_info1->next = NULL;
+        while (tmp->next != NULL) { //방문 횟수 가져오기
+            if (strcmp(tmp->name, name) == 0) {
+                if (tmp->phone == phone) {
+                    tmp->visit++;
+                    visit = tmp->visit;
+                    visit_on = true;
                 }
             }
-            if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
-                new_user = (mng*)malloc(sizeof(mng));
-                strcpy(new_user->name, name);
-                new_user->phone = phone;
-                new_user->visit = 1;
-                new_user->next = NULL;
-                tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가(현재 이부분 오류 있음)
-            }
-            break;
-        case 2:
-            t.table2 = true; //앉은 테이블 자리 없음으로 변경
-            user_info2 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-            strcpy(user_info2->name, name);
-            user_info2->phone = phone;
-            user_info2->next = NULL;
-            while (tmp != NULL) { //방문 횟수 가져오기
-                if (strcmp(tmp->name, name) == 0) {
-                    if (tmp->phone == phone) {
-                        tmp->visit++;
-                        visit = tmp->visit;
-                        visit_on = true;
-                    }
+            tmp = tmp->next;
+        }
+        if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
+            new_user = (mng*)malloc(sizeof(mng));
+            strcpy(new_user->name, name);
+            new_user->phone = phone;
+            new_user->visit = 1;
+            new_user->next = NULL;
+            tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        }
+        break;
+    case 2:
+        t.table2 = true; //앉은 테이블 자리 없음으로 변경
+        user_info2 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
+        strcpy(user_info2->name, name);
+        user_info2->phone = phone;
+        user_info2->next = NULL;
+        while (tmp->next != NULL) { //방문 횟수 가져오기
+            if (strcmp(tmp->name, name) == 0) {
+                if (tmp->phone == phone) {
+                    tmp->visit++;
+                    visit = tmp->visit;
+                    visit_on = true;
                 }
             }
-            if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
-                new_user = (mng*)malloc(sizeof(mng));
-                strcpy(new_user->name, name);
-                new_user->phone = phone;
-                new_user->visit = 1;
-                new_user->next = NULL;
-                tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
-            }
-            break;
-        case 3:
-            t.table3 = true; //앉은 테이블 자리 없음으로 변경
-            user_info3 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-            strcpy(user_info3->name, name);
-            user_info3->phone = phone;
-            user_info3->next = NULL;
-            while (tmp != NULL) { //방문 횟수 가져오기
-                if (strcmp(tmp->name, name) == 0) {
-                    if (tmp->phone == phone) {
-                        tmp->visit++;
-                        visit = tmp->visit;
-                        visit_on = true;
-                    }
+            tmp = tmp->next;
+        }
+        if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
+            new_user = (mng*)malloc(sizeof(mng));
+            strcpy(new_user->name, name);
+            new_user->phone = phone;
+            new_user->visit = 1;
+            new_user->next = NULL;
+            tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        }
+        break;
+    case 3:
+        t.table3 = true; //앉은 테이블 자리 없음으로 변경
+        user_info3 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
+        strcpy(user_info3->name, name);
+        user_info3->phone = phone;
+        user_info3->next = NULL;
+        while (tmp->next != NULL) { //방문 횟수 가져오기
+            if (strcmp(tmp->name, name) == 0) {
+                if (tmp->phone == phone) {
+                    tmp->visit++;
+                    visit = tmp->visit;
+                    visit_on = true;
                 }
             }
-            if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
-                new_user = (mng*)malloc(sizeof(mng));
-                strcpy(new_user->name, name);
-                new_user->phone = phone;
-                new_user->visit = 1;
-                new_user->next = NULL;
-                tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
-            }
-            break;
-        case 4:
-            t.table4 = true; //앉은 테이블 자리 없음으로 변경
-            user_info4 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-            strcpy(user_info4->name, name);
-            user_info4->phone = phone;
-            user_info4->next = NULL;
-            while (tmp != NULL) { //방문 횟수 가져오기
-                if (strcmp(tmp->name, name) == 0) {
-                    if (tmp->phone == phone) {
-                        tmp->visit++;
-                        visit = tmp->visit;
-                        visit_on = true;
-                    }
+            tmp = tmp->next;
+        }
+        if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
+            new_user = (mng*)malloc(sizeof(mng));
+            strcpy(new_user->name, name);
+            new_user->phone = phone;
+            new_user->visit = 1;
+            new_user->next = NULL;
+            tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        }
+        break;
+    case 4:
+        t.table4 = true; //앉은 테이블 자리 없음으로 변경
+        user_info4 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
+        strcpy(user_info4->name, name);
+        user_info4->phone = phone;
+        user_info4->next = NULL;
+        while (tmp->next != NULL) { //방문 횟수 가져오기
+            if (strcmp(tmp->name, name) == 0) {
+                if (tmp->phone == phone) {
+                    tmp->visit++;
+                    visit = tmp->visit;
+                    visit_on = true;
                 }
             }
-            if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
-                new_user = (mng*)malloc(sizeof(mng));
-                strcpy(new_user->name, name);
-                new_user->phone = phone;
-                new_user->visit = 1;
-                new_user->next = NULL;
-                tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
-            }
-            break;
+            tmp = tmp->next;
+        }
+        if (visit_on == false) { //새로운 사용자면 user_manage에 정보 입력
+            new_user = (mng*)malloc(sizeof(mng));
+            strcpy(new_user->name, name);
+            new_user->phone = phone;
+            new_user->visit = 1;
+            new_user->next = NULL;
+            tmp->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        }
+        break;
     }
 }
 
