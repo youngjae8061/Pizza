@@ -65,6 +65,7 @@ void menu_info();               // 가게 메뉴 출력
 void input_menu(order* start);  // 메뉴 입력(사용자)
 void print_menu(order* start);  // 사용자가 주문한 출력
 void modify_menu();             // 주문한 메뉴 수정
+void modify_bot(order* find);  // 실제로 메뉴 수정하는 함수
 void new_customer();            // 손님 입장
 void middle_bill();		        // 중간 계산 영수증
 void last_bill();	            // 최종 영수증
@@ -147,74 +148,118 @@ int main() {
 
 
 void modify_menu() {
-    system("cls");
-    t.table1 = false;
-    int t_num=0;
-    order_h = NULL;
-    order_end = NULL;
-    order* add_temp = NULL;
-    order* curr = order_h;
-    user_info1 = (user_info*)malloc(sizeof(user_info));
-    t.next1 = user_info1;
+    int t_num=0;    // 테이블 번호 선택
+    int select=0;   // 메뉴 선택
 
-    user_info* user = user_info_h;       
-    order* menu_list = (order*)malloc(sizeof(order)); 
-
-    printf("이름 : ");
-    scanf_s("%s", user_info1->name, 20);
-    user_info1->phone = 1234;
-
-    printf("안녕하세요 전화번호 %d번 , %s님\n", user_info1->phone, user_info1->name);
+    order* find = (order*)malloc(sizeof(order));
     
-    user_info1->next = menu_list;
-
-    for (int i = 0; i < 2; i++) {
-        printf("음식명 : ");
-        scanf_s("%s", menu_list->menu, 50);
-        menu_list->count = 2;
-        menu_list->price = 18000;
-        menu_list->pizza = 0;
-        printf("%s, %d %d %d\n", menu_list->menu, menu_list->count, menu_list->price, menu_list->pizza);
-        if (order_h == NULL) {
-            menu_list->next = NULL;
-            order_h = order_end = menu_list;
-        }
-        else {
-            menu_list->next = order_h;
-            order_h = menu_list;
-        }
-    }    
-
-    int i = 1;          // 메뉴 숫자를 표시하기 위한 변수
     printf("몇번 테이블 입니까?");
     scanf_s("%d", &t_num);
     switch (t_num) {
         case 1:
-            printf("1번 테이블의 메뉴는 다음과 같습니다.\n");
             if (t.table1 == true) {
                 printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
                 return 0;
             }
-            add_temp = order_h;
-            //print_menu(order_h);
-            while (add_temp != NULL) {
-                printf("\n\t%d. 메뉴명 : %s\n\n", i++, add_temp->menu);
-                printf("\t   개수 : %d\n\n", add_temp->count);
-                printf("\t   가격 : %d\n\n", add_temp->price);
-                add_temp = add_temp->next;
-            }
-            printf("\n");
+            find = tb_h->next1->next;
+            modify_bot(find);
             break;
         case 2:
+            if (t.table2 == true) {
+                printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
+                return 0;
+            }
+            find = tb_h->next2->next;
+            modify_bot(find);
             break;
         case 3:
+            if (t.table3 == true) {
+                printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
+                return 0;
+            }
+            find = tb_h->next3->next;
+            modify_bot(find);
             break;
         case 4:
+            if (t.table4 == true) {
+                printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
+                return 0;
+            }
+            find = tb_h->next4->next;
+            modify_bot(find);
             break;
         default:
             system("cls");
             printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
             break;
+    }
+}
+
+
+void modify_bot(order* find) {
+    int temp_count = 0; // 수량 변경 임시 저장(0인지 구분)
+    char modify;        // 변경할 메뉴의 이름
+    order* head = (order*)malloc(sizeof(order));    // 헤더 노드
+    order* temp = (order*)malloc(sizeof(order));    // 수량 변경 후 노드 삭제하기 위한 노드
+
+    head = find;
+    temp = NULL;
+
+    while (1) {
+        printf("메뉴를 선택해주세요\n");
+        printf("1. 메뉴 수정하기\n");
+        printf("2. 초기화면으로 돌아가기\n");
+        scanf_s("%d", select);
+        if (select == 1) {
+            printf("메뉴명을 입력해주세요 : ");
+            scanf_s("%s", &modify, 50);
+            while (1) { // 해당 메뉴 찾기 시작
+                // 수정하기 위해 입력 받은 modify가 find의 menu에 없을 경우
+                if (!(strcmp(modify, find->menu) == 0) && find->next == NULL) {
+                    printf(" 그런 메뉴는 없습니다!!\n\n");
+                    return 0;
+                }
+                // 수정하기 위해 입력 받은 modify와 find의 menu가 같은 문자일 경우
+                if (strcmp(modify, find->menu) == 0) {
+                    printf("수량을 변경해주세요 : ");
+                    scanf_s("%d", temp_count);
+                    if (temp_count == 0) { // 수량이 0일때 해당 노드 삭제 + 앞뒤 노드 이어주기
+                        while (1) { // 수량이 0으로 변경되어 해당 노드 free() + 앞뒤 노드 이어주기
+                            // 수정하기 위해 입력 받은 modify과 find의 menu이 같은 문자일 경우
+                            if (strcmp(modify, find->menu) == 0) {
+                                // modify과 head의 menu가 같은경우 즉, 맨앞의 노드를 삭제할 경우
+                                if (strcmp(modify, head->menu) == 0) {
+                                    head = find->next;
+                                }
+                                // find의 다음 노드가 NULL인 경우 즉, 맨 마지막 노드를 삭제할 경우
+                                else if (find->next == NULL) {
+                                    temp->next = NULL;
+                                }
+                                // 그 외의 경우
+                                else {
+                                    temp->next = find->next;
+                                }
+                                free(find);
+                                break;
+                            }
+                            // 해당 문자를 찾기위해 다음 노드로 이동
+                            temp = find;
+                            find = find->next;
+                        }
+                        printf("삭제 했습니다!!!\n\n");
+                        break;
+                    }
+                    // 0말고 다른 수량으로 변경될때 
+                    find->count = temp_count;
+                    printf("수정 성공했어요!\n");  // 수량 변경 성공
+                    break;
+                }
+                find = find->next; // 해당 메뉴 없을 시 다음 노드로 이동
+            }
+        }
+        else { // 이전화면으로 돌아가기(2)를 눌렀을 때
+            return 0;
+        }
     }
 }
 
