@@ -19,8 +19,6 @@ typedef struct order {
     int pizza;			// 0이면 일반, 1이면 프리미엄, 2이면 사이드 및 음료
     struct order* next;	//
 }order;
-order* order_h;			// 주문노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
-order* order_end;
 
 
 // 사용자 정보 노드
@@ -30,7 +28,6 @@ typedef struct user_info {
     int visit;			// 사용자 방문 횟수
     struct order* next;	//
 }user_info;
-user_info* user_info_h;		    // 사용자 정보 노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
 user_info* user_info1 = NULL, * user_info2 = NULL, * user_info3 = NULL, * user_info4 = NULL;
 
 
@@ -55,21 +52,18 @@ typedef struct table {
     bool table4;
     struct user_info* next4;
 }tb;
-tb* tb_h;                       // 테이블 노드의 맨 앞 노드 (가장 최근에 생성된 노드가 들어감) 
 tb t = { false, NULL, false, NULL, false, NULL, false, NULL };
 
 
 void program_info();            // 프로그램 정보 출력
 void user_menu();               // 사용자 메뉴 출력
 void menu_info();               // 가게 메뉴 출력
-void input_menu();  // 메뉴 입력(사용자)
-void print_menu();  // 사용자가 주문한 출력
+void input_menu();              // 메뉴 입력(사용자)
 void modify_menu();             // 주문한 메뉴 수정
 void modify_bot(order* find);  // 실제로 메뉴 수정하는 함수
 void new_customer();            // 손님 입장
 void middle_bill();		        // 중간 계산 영수증
 void last_bill();	            // 최종 영수증
-
 
 char menu_price[14][3][20] = {
     {"불고기피자", "20000", "0"}, {"고구마피자", "19000", "0"}, {"포테이토피자", "19000", "0"}, {"페페로니피자 ", "19000", "0"},
@@ -85,18 +79,11 @@ int main() {
     system("mode con:cols=150 lines=70");
 
     int num = 0;
-
-    order_h = (order*)malloc(sizeof(order));
-    order_end = (order*)malloc(sizeof(order));
-    user_info_h = (user_info*)malloc(sizeof(user_info));
     mng_h = (mng*)malloc(sizeof(mng)); // mng_h 값 초기화
     strcpy(mng_h->name, "초기화");
     mng_h->phone = 0;
     mng_h->visit = 0;
     mng_h->next = NULL;
-    user_info_h = NULL;
-    tb_h = NULL;
-    memset(order_h, 0, sizeof(order));
 
     program_info();
 
@@ -111,7 +98,6 @@ int main() {
             rewind(stdin);
         }
         else { // 정상적으로 메뉴를 입력했을 시 switch문 실행
-            order* tmp = order_h;
             switch (num) {
             case 1: // 주문
                 system("cls");
@@ -119,12 +105,15 @@ int main() {
                 input_menu();
                 break;
             case 2: // 주문 수정
+                system("cls");
                 modify_menu();
                 break;
             case 3: // 중간 계산서 출력
+                system("cls");
                 middle_bill();
                 break;
             case 4: // 계산
+                system("cls");
                 last_bill();
                 break;
             case 5: // 손님입장
@@ -142,46 +131,45 @@ int main() {
     return 0;
 }
 
-
 void modify_menu() {
     int t_num = 0;    // 테이블 번호 선택
     int select = 0;   // 메뉴 선택
 
-    order* find = (order*)malloc(sizeof(order));
+    order* find;
 
     printf("몇번 테이블 입니까?");
     scanf_s("%d", &t_num);
     switch (t_num) {
     case 1:
-        if (t.table1 == true) {
+        if (t.table1 == false) {
             printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
             return 0;
         }
-        find = tb_h->next1->next;
+        find = t.next1->next;
         modify_bot(find);
         break;
     case 2:
-        if (t.table2 == true) {
+        if (t.table2 == false) {
             printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
             return 0;
         }
-        find = tb_h->next2->next;
+        find = t.next2->next;
         modify_bot(find);
         break;
     case 3:
-        if (t.table3 == true) {
+        if (t.table3 == false) {
             printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
             return 0;
         }
-        find = tb_h->next3->next;
+        find = t.next3->next;
         modify_bot(find);
         break;
     case 4:
-        if (t.table4 == true) {
+        if (t.table4 == false) {
             printf("입력하신 자리는 비어있는 테이블입니다. 다시 확인해주세요.\n");
             return 0;
         }
-        find = tb_h->next4->next;
+        find = t.next4->next;
         modify_bot(find);
         break;
     default:
@@ -194,10 +182,10 @@ void modify_menu() {
 
 void modify_bot(order* find) {
     int temp_count = 0; // 수량 변경 임시 저장(0인지 구분)
-    char modify;        // 변경할 메뉴의 이름
+    char modify[20];        // 변경할 메뉴의 이름
     int select;
-    order* head = (order*)malloc(sizeof(order));    // 헤더 노드
-    order* temp = (order*)malloc(sizeof(order));    // 수량 변경 후 노드 삭제하기 위한 노드
+    order* head;    // 헤더 노드
+    order* temp;    // 수량 변경 후 노드 삭제하기 위한 노드
 
     head = find;
     temp = NULL;
@@ -205,11 +193,11 @@ void modify_bot(order* find) {
     while (1) {
         printf("메뉴를 선택해주세요\n");
         printf("1. 메뉴 수정하기\n");
-        printf("2. 초기화면으로 돌아가기\n");
+        printf("(1을 제외한 숫자). 초기화면으로 돌아가기\n");
         scanf_s("%d", &select);
         if (select == 1) {
             printf("메뉴명을 입력해주세요 : ");
-            scanf_s("%s", &modify, 50);
+            scanf_s("%s", modify, sizeof(modify));
             while (1) { // 해당 메뉴 찾기 시작
                 // 수정하기 위해 입력 받은 modify가 find의 menu에 없을 경우
                 if (!(strcmp(modify, find->menu) == 0) && find->next == NULL) {
@@ -219,26 +207,23 @@ void modify_bot(order* find) {
                 // 수정하기 위해 입력 받은 modify와 find의 menu가 같은 문자일 경우
                 if (strcmp(modify, find->menu) == 0) {
                     printf("수량을 변경해주세요 : ");
-                    scanf_s("%d", temp_count);
+                    scanf_s("%d", &temp_count);
                     if (temp_count == 0) { // 수량이 0일때 해당 노드 삭제 + 앞뒤 노드 이어주기
                         while (1) { // 수량이 0으로 변경되어 해당 노드 free() + 앞뒤 노드 이어주기
-                            // 수정하기 위해 입력 받은 modify과 find의 menu이 같은 문자일 경우
-                            if (strcmp(modify, find->menu) == 0) {
                                 // modify과 head의 menu가 같은경우 즉, 맨앞의 노드를 삭제할 경우
-                                if (strcmp(modify, head->menu) == 0) {
-                                    head = find->next;
-                                }
-                                // find의 다음 노드가 NULL인 경우 즉, 맨 마지막 노드를 삭제할 경우
-                                else if (find->next == NULL) {
-                                    temp->next = NULL;
-                                }
-                                // 그 외의 경우
-                                else {
-                                    temp->next = find->next;
-                                }
-                                free(find);
-                                break;
+                            if (strcmp(modify, head->menu) == 0) {
+                                head = find->next;
                             }
+                            // find의 다음 노드가 NULL인 경우 즉, 맨 마지막 노드를 삭제할 경우
+                            else if (find->next == NULL) {
+                                temp->next = NULL;
+                            }
+                            // 그 외의 경우
+                            else {
+                                temp->next = find->next;
+                            }
+                            free(find);
+                            break;
                             // 해당 문자를 찾기위해 다음 노드로 이동
                             temp = find;
                             find = find->next;
@@ -248,6 +233,11 @@ void modify_bot(order* find) {
                     }
                     // 0말고 다른 수량으로 변경될때 
                     find->count = temp_count;
+                    for (int i = 0; i < 14; i++) {
+                        if (strcmp(find->menu, menu_price[i][0]) == 0)
+                            find->price = atoi(menu_price[i][1]) * temp_count;
+                    }
+                    system("cls");
                     printf("수정 성공했어요!\n");  // 수량 변경 성공
                     break;
                 }
@@ -265,8 +255,11 @@ void input_menu() {
     int table_number; // 앉은 테이블 번호
     char menu[20]; //메뉴
     int count; //메뉴의 수량
-    order* tmp; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+    int select;
+    bool input = false;
+    order* tmp = NULL; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
     order* pre = NULL; //주문 노드의 마지막을 가리키는 포인터
+    user_info* user_info = NULL;
 
     printf("앉은 테이블을 입력하세요.\n");
     scanf_s("%d", &table_number, sizeof(table_number));
@@ -278,74 +271,92 @@ void input_menu() {
             return;
         }
         tmp = t.next1->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+        user_info = t.next1;
+        break;
+    case 2:
+        if (t.table2 == false) {
+            printf("해당 테이블은 비어있습니다.");
+            return;
+        }
+        tmp = t.next2->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+        user_info = t.next2;
+        break;
+    case 3:
+        if (t.table3 == false) {
+            printf("해당 테이블은 비어있습니다.");
+            return;
+        }
+        tmp = t.next3->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+        user_info = t.next3;
+        break;
+    case 4:
+        if (t.table4 == false) {
+            printf("해당 테이블은 비어있습니다.");
+            return;
+        }
+        tmp = t.next4->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+        user_info = t.next4;
+        break;
+    default:
+        system("cls");
+        printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
+        break;
+    }
 
-        printf("주문하실 메뉴를 적어주세요. \n");
-        scanf_s("%s", menu, sizeof(menu));
+    while (1) {
+        system("cls");
+        printf("메뉴를 선택해주세요\n");
+        printf("1. 주문하기\n");
+        printf("(1을 제외한 숫자). 초기화면으로 돌아가기\n");
+        scanf_s("%d", &select);
+        if (select == 1) {
+            printf("주문하실 메뉴를 적어주세요. \n");
+            scanf_s("%s", menu, sizeof(menu));
 
-        for (int i = 0; i < 14; i++) {
-            if (strcmp(menu_price[i][0], menu) == 0) { //메뉴판에 있는 메뉴면 실행
-                printf("개수를 입력해주세요. : ");
-                scanf_s("%d", &count, sizeof(count));
+            for (int i = 0; i < 14; i++) {
+                if (strcmp(menu_price[i][0], menu) == 0) { //메뉴판에 있는 메뉴면 실행
+                    printf("개수를 입력해주세요. : ");
+                    scanf_s("%d", &count, sizeof(count));
 
-                if (tmp == NULL) { // 첫 주문
-                    tmp = (order*)malloc(sizeof(order));
+                    if (tmp == NULL) { // 첫 주문
+                        tmp = (order*)malloc(sizeof(order));
+                        strcpy(tmp->menu, menu);
+                        tmp->count = count;
+                        tmp->price = atoi(menu_price[i][1]) * count;
+                        tmp->pizza = atoi(menu_price[i][2]);
+                        tmp->next = NULL;
+                        user_info->next = tmp;
+                        break;
+                    }
+
+                    while (tmp != NULL) { // 첫 주문이 아니면 같은 메뉴를 주문 했는지 찾기
+                        if (strcmp(tmp->menu, menu) == 0) {
+                            tmp->count += count;
+                            tmp->price = atoi(menu_price[i][1]) * tmp->count;
+                            input = true;
+                            break;
+                        }
+                        pre = tmp;
+                        tmp = tmp->next;
+                    }
+                    if (input == true)
+                        break;
+                    tmp = (order*)malloc(sizeof(order)); //같은 메뉴가 없다면 노드 마지막에 추가
+                    pre->next = tmp;
                     strcpy(tmp->menu, menu);
                     tmp->count = count;
                     tmp->price = atoi(menu_price[i][1]) * count;
                     tmp->pizza = atoi(menu_price[i][2]);
                     tmp->next = NULL;
-                    t.next1->next = tmp;
-                    return;
                 }
-
-                while (tmp != NULL) { // 첫 주문이 아니면 같은 메뉴를 주문 했는지 찾기
-                    if (strcmp(tmp->menu, menu) == 0) {
-                        tmp->count += count;
-                        tmp->price = atoi(menu_price[i][1]) * tmp->count;
-                        return;
-                    }
-                    pre = tmp;
-                    tmp = tmp->next;
-                }
-                tmp = (order*)malloc(sizeof(order)); //같은 메뉴가 없다면 노드 마지막에 추가
-                pre->next = tmp;
-                strcpy(tmp->menu, menu);
-                tmp->count = count;
-                tmp->price = atoi(menu_price[i][1]) * count;
-                tmp->pizza = atoi(menu_price[i][2]);
-                tmp->next = NULL;
-                return;
+                if (i == 13)
+                    printf("메뉴판에 없는 메뉴입니다.\n 다시 주문해주세요.\n");
             }
         }
-        printf("메뉴판에 없는 메뉴입니다.\n 다시 주문해주세요.\n");
-        return;
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    case 4:
-        break;
+        else
+            return;
     }
 }
-
-
-void print_menu() {
-    system("cls");
-    order* tmp = t.next1->next;
-    int i = 0;
-    printf("\n\n주문서 총 목록\n");
-    printf("===========================================\n");
-    while (1)
-    {
-        printf("%d | %s  %d  %d\n", i + 1, tmp->menu, tmp->count, tmp->price);
-
-        if (tmp->next == NULL)
-            break;
-        tmp = tmp->next;
-    }
-}
-
 
 void new_customer() {
     int table_count = 0; //남은 테이블 수
@@ -356,6 +367,7 @@ void new_customer() {
     mng* tmp = mng_h; //방문 횟수를 가져오기 위한 순회 포인터
     mng* pre = mng_h; //마지막 노드를 가리키는 포인터
     mng* new_user = NULL; //새로운 사용자의 정보를 추가하기 위한 포인터
+    user_info* ui;
     printf("현재 남은 테이블은 "); //남은 테이블 번호를 알려주고 자리가 없으면 종료
     if (t.table1 == false) {
         table_count++;
@@ -382,118 +394,67 @@ void new_customer() {
 
     printf("원하시는 테이블을 선택하세요.\n");
     scanf_s("%d", &table_number, sizeof(table_number));
-    printf("이름을 입력하세요.\n");
-    scanf_s("%s", name, sizeof(name));
-    printf("전화번호 뒷자리를 입력하세요.\n");
-    scanf_s("%d", &phone, sizeof(phone));
 
     switch (table_number) {
     case 1:
         t.table1 = true; //앉은 테이블 자리 없음으로 변경
         user_info1 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-        strcpy(user_info1->name, name);
-        user_info1->phone = phone;
-        user_info1->visit = 1;
-        user_info1->next = NULL;
-        t.next1 = user_info1;
-        while (tmp != NULL) { //방문 횟수 가져오기
-            if (strcmp(tmp->name, name) == 0) {
-                if (tmp->phone == phone) {
-                    tmp->visit++;
-                    visit = tmp->visit;
-                    return;
-                }
-            }
-            pre = tmp;
-            tmp = tmp->next;
-        }
-
-        new_user = (mng*)malloc(sizeof(mng));//새로운 사용자면 user_manage에 정보 입력
-        strcpy(new_user->name, name);
-        new_user->phone = phone;
-        new_user->visit = 1;
-        new_user->next = NULL;
-        pre->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        ui = user_info1;
+        t.next1 = ui;
         break;
     case 2:
         t.table2 = true; //앉은 테이블 자리 없음으로 변경
         user_info2 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-        strcpy(user_info2->name, name);
-        user_info2->phone = phone;
-        user_info2->next = NULL;
-        t.next2 = user_info2;
-        while (tmp != NULL) { //방문 횟수 가져오기
-            if (strcmp(tmp->name, name) == 0) {
-                if (tmp->phone == phone) {
-                    tmp->visit++;
-                    visit = tmp->visit;
-                    return;
-                }
-            }
-            pre = tmp;
-            tmp = tmp->next;
-        }
-
-        new_user = (mng*)malloc(sizeof(mng));//새로운 사용자면 user_manage에 정보 입력
-        strcpy(new_user->name, name);
-        new_user->phone = phone;
-        new_user->visit = 1;
-        new_user->next = NULL;
-        pre->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        ui = user_info2;
+        t.next2 = ui;
         break;
     case 3:
         t.table3 = true; //앉은 테이블 자리 없음으로 변경
         user_info3 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-        strcpy(user_info3->name, name);
-        user_info3->phone = phone;
-        user_info3->next = NULL;
-        t.next3 = user_info3;
-        while (tmp != NULL) { //방문 횟수 가져오기
-            if (strcmp(tmp->name, name) == 0) {
-                if (tmp->phone == phone) {
-                    tmp->visit++;
-                    visit = tmp->visit;
-                    return;
-                }
-            }
-            pre = tmp;
-            tmp = tmp->next;
-        }
-
-        new_user = (mng*)malloc(sizeof(mng));//새로운 사용자면 user_manage에 정보 입력
-        strcpy(new_user->name, name);
-        new_user->phone = phone;
-        new_user->visit = 1;
-        new_user->next = NULL;
-        pre->next = new_user; //user_manage의 마지막 노드 뒤에 추가
-        break;
+        ui = user_info3;
+        t.next3 = ui;
     case 4:
         t.table4 = true; //앉은 테이블 자리 없음으로 변경
         user_info4 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
-        strcpy(user_info4->name, name);
-        user_info4->phone = phone;
-        user_info4->next = NULL;
-        t.next4 = user_info4;
-        while (tmp != NULL) { //방문 횟수 가져오기
-            if (strcmp(tmp->name, name) == 0) {
-                if (tmp->phone == phone) {
-                    tmp->visit++;
-                    visit = tmp->visit;
-                    return;
-                }
-            }
-            pre = tmp;
-            tmp = tmp->next;
-        }
-
-        new_user = (mng*)malloc(sizeof(mng));//새로운 사용자면 user_manage에 정보 입력
-        strcpy(new_user->name, name);
-        new_user->phone = phone;
-        new_user->visit = 1;
-        new_user->next = NULL;
-        pre->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+        ui = user_info4;
+        t.next4 = ui;
+        break;
+    default:
+        system("cls");
+        printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
+        return;
         break;
     }
+
+    printf("이름을 입력하세요.\n");
+    scanf_s("%s", name, sizeof(name));
+    printf("전화번호 뒷자리를 입력하세요.\n");
+    scanf_s("%d", &phone, sizeof(phone));
+    strcpy(ui->name, name);
+
+    ui->phone = phone;
+    ui->visit = 1;
+    ui->next = NULL;
+
+    while (tmp != NULL) { //방문 횟수 가져오기
+        if (strcmp(tmp->name, name) == 0) {
+            if (tmp->phone == phone) {
+                tmp->visit++;
+                visit = tmp->visit;
+                return;
+            }
+        }
+        pre = tmp;
+        tmp = tmp->next;
+    }
+
+    new_user = (mng*)malloc(sizeof(mng));//새로운 사용자면 user_manage에 정보 입력
+    strcpy(new_user->name, name);
+    new_user->phone = phone;
+    new_user->visit = 1;
+    new_user->next = NULL;
+    pre->next = new_user; //user_manage의 마지막 노드 뒤에 추가
+
 }
 
 
@@ -548,13 +509,20 @@ void middle_bill() {
         tmp = t.next4->next;
         user_info = t.next4;
         break;
+    default:
+        system("cls");
+        printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
+        return;
+        break;
     }
 
     // 주문내용(영수증)
     printf("\n\n\t\t중간 영수증 출력\n");
     printf("---------------------------------------------------\n");
-    if (tmp == NULL)
+    if (tmp == NULL) {
         printf("아직 주문한 메뉴가 없습니다.\n");
+        return;
+    }
     while (tmp != NULL) {
         printf("%20s\t%d\t%d원\n", tmp->menu, tmp->count, tmp->price);
         sum += tmp->price;
@@ -652,13 +620,20 @@ void last_bill() {
         tmp = t.next4->next;
         user_info = t.next4;
         break;
+    default:
+        system("cls");
+        printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
+        return;
+        break;
     }
 
     // 주문내용(영수증)
-    printf("\n\n\t\t중간 영수증 출력\n");
+    printf("\n\n\t\t영수증 출력\n");
     printf("---------------------------------------------------\n");
-    if (tmp == NULL)
+    if (tmp == NULL) {
         printf("아직 주문한 메뉴가 없습니다.\n");
+        return;
+    }
     while (tmp != NULL) {
         printf("%20s\t%d\t%d원\n", tmp->menu, tmp->count, tmp->price);
         sum += tmp->price;
@@ -673,7 +648,7 @@ void last_bill() {
     printf("---------------------------------------------------\n");
     if (user_info->visit == 1) {
         first_order = 3000;
-        printf("첫 방문 할인 이벤트\t\t%d\n", first_order);
+        printf("첫 방문 할인 이벤트\t\t%d원\n", first_order);
     }
     if (user_info->visit == 5) {
         five_order = 5000;
@@ -712,7 +687,6 @@ void last_bill() {
             break;
         case 2:
             t.table2 = false;
-
             break;
         case 3:
             t.table2 = false;
