@@ -466,15 +466,25 @@ void new_customer() {
         system("cls");
         printf("\n매장 내에 테이블은 1, 2, 3, 4번 테이블로 총 4개 입니다. 테이블 번호를 확인해 주세요\n");
         return;
-        break;
     }
 
     printf("이름을 입력하세요.\n");
     scanf_s("%s", name, sizeof(name));
     printf("전화번호 뒷자리를 입력하세요.\n");
-    if (scanf_s("%d", &phone) == 0 || phone - 1000 < 0) {
+    if (scanf_s("%d", &phone) == 0 || phone - 1000 < 0 || 10000 - phone < 1) {
         system("cls");
         printf("문자를 입력했거나. 4자리를 입력하지 않으셨습니다. 전화번호 뒷자리는 숫.자.만. 4자리로만 입력하세요. \n\n");
+        switch (table_number) {
+        case 1: t.table1 = false;
+            break;
+        case 2: t.table2 = false;
+            break;
+        case 3: t.table3 = false;
+            break;
+        case 4: t.table4 = false;
+            break;
+        default: break;
+        }
         return;
     }
     strcpy(ui->name, name);
