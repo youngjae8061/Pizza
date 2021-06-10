@@ -424,23 +424,39 @@ void new_customer() {
 
     switch (table_number) {
     case 1:
+        if (t.table1 == true) {
+            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            return;
+        }
         t.table1 = true; //앉은 테이블 자리 없음으로 변경
         user_info1 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
         ui = user_info1;
         t.next1 = ui;
         break;
     case 2:
+        if (t.table2 == true) {
+            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            return;
+        }
         t.table2 = true; //앉은 테이블 자리 없음으로 변경
         user_info2 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
         ui = user_info2;
         t.next2 = ui;
         break;
     case 3:
+        if (t.table3 == true) {
+            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            return;
+        }
         t.table3 = true; //앉은 테이블 자리 없음으로 변경
         user_info3 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
         ui = user_info3;
         t.next3 = ui;
     case 4:
+        if (t.table4 == true) {
+            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            return;
+        }
         t.table4 = true; //앉은 테이블 자리 없음으로 변경
         user_info4 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
         ui = user_info4;
