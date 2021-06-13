@@ -68,6 +68,7 @@ void new_customer();            // 손님 입장
 void middle_bill();		        // 중간 계산 영수증
 void last_bill();	            // 최종 영수증
 
+
 char menu_price[14][3][20] = {
     {"불고기피자", "20000", "0"}, {"고구마피자", "19000", "0"}, {"포테이토피자", "19000", "0"}, {"페퍼로니피자 ", "19000", "0"},
     {"쉬림프피자", "26000", "1"}, {"해물피자", "28000", "1"}, {"핫스파이시피자", "24000", "1"}, {"슈퍼콤비네이션피자", "26000", "1"},
@@ -97,8 +98,7 @@ int main() {
         // 메뉴 입력시 숫자가 아닌 문자 입력시 버퍼에 입력된 문자 초기화
         if (scanf_s("%d", &num) == 0) {
             system("cls");
-            printf("문자를 입력하셨네요. 메뉴는 숫.자.만. 눌러주세요.\n\n");
-            rewind(stdin);
+            printf(" 문자를 입력하셨네요. 메뉴는 숫.자.만. 눌러주세요.\n\n");
         }
         else { // 정상적으로 메뉴를 입력했을 시 switch문 실행
             switch (num) {
@@ -279,55 +279,62 @@ void input_menu() {
     user_info* user_info = NULL;
 
     printf("앉은 테이블을 입력하세요. : ");
-    scanf_s("%d", &table_number);
-
-    switch (table_number) {
-    case 1:
-        if (t.table1 == false) {
-            empty_table();
-            return;
+    //scanf_s("%d", &table_number);
+    if (scanf_s("%d", &table_number) == 0) {
+        system("cls");
+        printf(" 문자를 입력하셨네요. 매장엔 1~4번 테이블만 있습니다. 않으신 손님의 테이블 번호를 눌러주세요.\n\n");
+        return;
+    }
+    else {
+        switch (table_number) {
+        case 1:
+            if (t.table1 == false) {
+                empty_table();
+                return;
+            }
+            tmp = t.next1->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+            user_info = t.next1;
+            break;
+        case 2:
+            if (t.table2 == false) {
+                empty_table();
+                return;
+            }
+            tmp = t.next2->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+            user_info = t.next2;
+            break;
+        case 3:
+            if (t.table3 == false) {
+                empty_table();
+                return;
+            }
+            tmp = t.next3->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+            user_info = t.next3;
+            break;
+        case 4:
+            if (t.table4 == false) {
+                empty_table();
+                return;
+            }
+            tmp = t.next4->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
+            user_info = t.next4;
+            break;
+        default:
+            invalid_table();
+            return 0;
         }
-        tmp = t.next1->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
-        user_info = t.next1;
-        break;
-    case 2:
-        if (t.table2 == false) {
-            empty_table();
-            return;
-        }
-        tmp = t.next2->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
-        user_info = t.next2;
-        break;
-    case 3:
-        if (t.table3 == false) {
-            empty_table();
-            return;
-        }
-        tmp = t.next3->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
-        user_info = t.next3;
-        break;
-    case 4:
-        if (t.table4 == false) {
-            empty_table();
-            return;
-        }
-        tmp = t.next4->next; //주문 노드의 헤드(테이블 -> 유저정보 -> tmp)
-        user_info = t.next4;
-        break;
-    default:
-        invalid_table();
-        return 0;
     }
 
     while (1) {
         check = false;
 
         printf("\n======================================\n");
-        printf("메뉴를 선택해주세요\n");
-        printf("1. 주문하기 (초기화면으로 돌아가려면 1을 제외한 아무키나 눌러주세요.) : ");
-        //scanf_s("%d", &select);
+        printf(">>> 메뉴를 선택해주세요\n");
+        printf(">>> 1. 주문하기 \n>>> 초기화면으로 돌아가려면 1을 제외한 아무키나 눌러주세요. : ");
+
         if (scanf_s("%d", &select) == 0) {
             system("cls");
+            printf("\n이전 메뉴로 돌아가기를 선택하셨습니다.\n\n");
             return;
         }
         else {
@@ -377,6 +384,7 @@ void input_menu() {
             }
             else {
                 system("cls");
+                printf("\n이전 메뉴로 돌아가기를 선택하셨습니다.\n\n");
                 return;
             }
         }
@@ -395,7 +403,7 @@ void new_customer() {
     mng* pre = mng_h;   // 마지막 노드를 가리키는 포인터
     mng* new_user = NULL; // 새로운 사용자의 정보를 추가하기 위한 포인터
     user_info* ui;
-    printf("현재 남은 테이블은 "); //남은 테이블 번호를 알려주고 자리가 없으면 종료
+    printf("현재 남은 테이블은 [  "); //남은 테이블 번호를 알려주고 자리가 없으면 종료
     if (t.table1 == false) {
         table_count++;
         printf("1 ");
@@ -413,19 +421,21 @@ void new_customer() {
         printf("4 ");
     }
     if (table_count == 0) {
-        printf("현재 테이블이 만석입니다.\n다음에 방문해주세요.");
+        printf("0  ] 입니다.\n 자리가 없으니 다음에 방문해주세요.");
         return;
     }
     else
-        printf("입니다.\n");
+        printf(" ] 입니다.\n");
 
-    printf("원하시는 테이블을 선택하세요.\n");
+    rewind(stdin);
+
+    printf("원하시는 테이블을 선택하세요 : ");
     scanf_s("%d", &table_number);
 
     switch (table_number) {
     case 1:
         if (t.table1 == true) {
-            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            printf("\n선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
             return;
         }
         t.table1 = true; //앉은 테이블 자리 없음으로 변경
@@ -435,7 +445,7 @@ void new_customer() {
         break;
     case 2:
         if (t.table2 == true) {
-            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            printf("\n선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
             return;
         }
         t.table2 = true; //앉은 테이블 자리 없음으로 변경
@@ -445,7 +455,7 @@ void new_customer() {
         break;
     case 3:
         if (t.table3 == true) {
-            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            printf("\n선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
             return;
         }
         t.table3 = true; //앉은 테이블 자리 없음으로 변경
@@ -454,7 +464,7 @@ void new_customer() {
         t.next3 = ui;
     case 4:
         if (t.table4 == true) {
-            printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
+            printf("\n선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
             return;
         }
         t.table4 = true; //앉은 테이블 자리 없음으로 변경
@@ -468,12 +478,17 @@ void new_customer() {
         return;
     }
 
-    printf("이름을 입력하세요.\n");
+    rewind(stdin);
+
+    printf("이름을 입력하세요 : ");
     scanf_s("%s", name, sizeof(name));
-    printf("전화번호 뒷자리를 입력하세요.\n");
+
+    rewind(stdin);
+
+    printf("전화번호 뒷자리를 입력하세요 : ");
     if (scanf_s("%d", &phone) == 0 || phone - 1000 < 0 || 10000 - phone < 1) {
         system("cls");
-        printf("문자를 입력했거나. 4자리를 입력하지 않으셨습니다. 전화번호 뒷자리는 숫.자.만. 4자리로만 입력하세요. \n\n");
+        printf("문자를 입력했거나. 4자리를 입력하지 않으셨습니다. 전화번호 뒷자리는 숫.자.4.자.리.로 입력하세요. \n\n");
         switch (table_number) {
         case 1: t.table1 = false;
             break;
