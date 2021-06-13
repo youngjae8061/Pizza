@@ -61,7 +61,7 @@ void user_menu();               // 사용자 메뉴 출력
 void menu_info();               // 가게 메뉴 출력
 void input_menu();              // 메뉴 입력(사용자)
 void modify_menu();             // 주문한 메뉴 수정
-void modify_bot(order* find);   // 실제로 메뉴 수정하는 함수
+void modify_bot(order* find, user_info *ui);   // 실제로 메뉴 수정하는 함수
 void empty_table();             // 비어있는 테이블
 void invalid_table();           // 테이블을 잘못입력한 경우
 void new_customer();            // 손님 입장
@@ -135,6 +135,7 @@ void modify_menu() {
     int select = 0;   // 메뉴 선택
 
     order* find;
+    user_info* ui;
 
     printf("앉은 테이블을 입력하세요. ");
     scanf_s("%d", &t_num) == 0;
@@ -145,32 +146,36 @@ void modify_menu() {
             empty_table();
             return 0;
         }
+        ui = t.next1;
         find = t.next1->next;
-        modify_bot(find);
+        modify_bot(find, ui);
         break;
     case 2:
         if (t.table2 == false) {
             empty_table();
             return 0;
         }
+        ui = t.next2;
         find = t.next2->next;
-        modify_bot(find);
+        modify_bot(find, ui);
         break;
     case 3:
         if (t.table3 == false) {
             empty_table();
             return 0;
         }
+        ui = t.next3;
         find = t.next3->next;
-        modify_bot(find);
+        modify_bot(find, ui);
         break;
     case 4:
         if (t.table4 == false) {
             empty_table();;
             return 0;
         }
+        ui = t.next4;
         find = t.next4->next;
-        modify_bot(find);
+        modify_bot(find, ui);
         break;
     default:
         invalid_table();
@@ -179,16 +184,16 @@ void modify_menu() {
 }
 
 
-void modify_bot(order* find) {
+void modify_bot(order* find, user_info*ui) {
     system("cls");
     int temp_count = 0; // 수량 변경 임시 저장(0인지 구분)
     char modify[20];        // 변경할 메뉴의 이름
     int select;
     order* head;    // 헤더 노드
-    order* temp;    // 수량 변경 후 노드 삭제하기 위한 노드
+    order* temp;    // 마지막에서 하나 전 노드
 
     head = find;
-    temp = NULL;
+    temp = find;
 
     while (1) {
         printf("\n======================================\n");
@@ -212,7 +217,7 @@ void modify_bot(order* find) {
                         while (1) { // 수량이 0으로 변경되어 해당 노드 free() + 앞뒤 노드 이어주기
                                 // modify과 head의 menu가 같은경우 즉, 맨앞의 노드를 삭제할 경우
                             if (strcmp(modify, head->menu) == 0) {
-                                head = find->next;
+                                ui->next = find->next;
                             }
                             // find의 다음 노드가 NULL인 경우 즉, 맨 마지막 노드를 삭제할 경우
                             else if (find->next == NULL) {
@@ -241,6 +246,7 @@ void modify_bot(order* find) {
                     printf("수정 성공했어요!\n");  // 수량 변경 성공
                     break;
                 }
+                temp = find;
                 find = find->next; // 해당 메뉴 없을 시 다음 노드로 이동
             }
         }
@@ -267,7 +273,6 @@ void invalid_table(){
 
 void input_menu() {
     system("cls");
-    rewind(stdin);
     menu_info();
     int table_number; // 앉은 테이블 번호
     char menu[20]; //메뉴
@@ -328,7 +333,6 @@ void input_menu() {
 
     while (1) {
         check = false;
-        count = 0;
 
         printf("\n======================================\n");
         printf(">>> 메뉴를 선택해주세요\n");
@@ -346,12 +350,8 @@ void input_menu() {
                 for (int i = 0; i < 14; i++) {
                     if (strcmp(menu_price[i][0], menu) == 0) { //메뉴판에 있는 메뉴면 실행
                         printf("개수를 입력해주세요. : ");
-                        if (scanf_s("%d", &count) == 0) {
-                            system("cls");
-                            printf("\n수량을 문자로 입력하셨습니다. 숫자로 입력해주세요.\n\n");
-                            return;
-                        }
-                        
+                        scanf_s("%d", &count);
+
                         if (tmp == NULL) { // 첫 주문
                             tmp = (order*)malloc(sizeof(order));
                             strcpy(tmp->menu, menu);
