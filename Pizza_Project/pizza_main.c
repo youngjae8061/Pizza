@@ -452,6 +452,7 @@ void new_customer() {
         user_info3 = (user_info*)malloc(sizeof(user_info)); //테이블에 앉은 사용자 정보 입력
         ui = user_info3;
         t.next3 = ui;
+        break;
     case 4:
         if (t.table4 == true) {
             printf("선택하신 테이블은 이미 선택된 테이블입니다. 다른 테이블을 선택해주세요. \n\n");
@@ -498,6 +499,7 @@ void new_customer() {
             if (tmp->phone == phone) {
                 tmp->visit++;
                 visit = tmp->visit;
+                ui->visit = visit;
                 return;
             }
         }
