@@ -267,6 +267,7 @@ void invalid_table(){
 
 void input_menu() {
     system("cls");
+    rewind(stdin);
     menu_info();
     int table_number; // 앉은 테이블 번호
     char menu[20]; //메뉴
@@ -327,6 +328,7 @@ void input_menu() {
 
     while (1) {
         check = false;
+        count = 0;
 
         printf("\n======================================\n");
         printf(">>> 메뉴를 선택해주세요\n");
@@ -344,8 +346,12 @@ void input_menu() {
                 for (int i = 0; i < 14; i++) {
                     if (strcmp(menu_price[i][0], menu) == 0) { //메뉴판에 있는 메뉴면 실행
                         printf("개수를 입력해주세요. : ");
-                        scanf_s("%d", &count);
-
+                        if (scanf_s("%d", &count) == 0) {
+                            system("cls");
+                            printf("\n수량을 문자로 입력하셨습니다. 숫자로 입력해주세요.\n\n");
+                            return;
+                        }
+                        
                         if (tmp == NULL) { // 첫 주문
                             tmp = (order*)malloc(sizeof(order));
                             strcpy(tmp->menu, menu);
