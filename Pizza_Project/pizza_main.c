@@ -421,7 +421,7 @@ void new_customer() {
         printf("4 ");
     }
     if (table_count == 0) {
-        printf("0  ] 입니다.\n 자리가 없으니 다음에 방문해주세요.");
+        printf("0  ] 입니다.\n자리가 없으니 다음에 방문해주세요.\n\n");
         return;
     }
     else
